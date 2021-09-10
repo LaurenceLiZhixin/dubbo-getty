@@ -46,7 +46,7 @@ func main() {
 
 	util.Profiling(*pprofPort)
 
-	options := []getty.ServerOption{getty.WithLocalAddress(":8090")}
+	options := []getty.ServerOption{getty.WithLocalAddress(":8090"), getty.WithServerBufferCollectionOpen(false)}
 
 	if *taskPoolMode {
 		taskPool = gxsync.NewTaskPoolSimple(*taskPoolSize)

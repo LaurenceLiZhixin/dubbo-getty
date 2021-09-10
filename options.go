@@ -35,6 +35,9 @@ type ServerOptions struct {
 	caCert     string
 	// task queue
 	tPool gxsync.GenericTaskPool
+
+	// readBufferCollectionOpen defines if the read buffer would be collected
+	readBufferCollectionOpen bool
 }
 
 // WithLocalAddress @addr server listen address.
@@ -93,6 +96,13 @@ func WithServerTlsConfigBuilder(tlsConfigBuilder TlsConfigBuilder) ServerOption 
 	}
 }
 
+// WithServerBufferCollectionOpen defines if read buffer would be collected
+func WithServerBufferCollectionOpen(readBufferCollectionOpen bool) ServerOption {
+	return func(o *ServerOptions) {
+		o.readBufferCollectionOpen = readBufferCollectionOpen
+	}
+}
+
 /////////////////////////////////////////
 // Client Options
 /////////////////////////////////////////
@@ -103,6 +113,9 @@ type ClientOptions struct {
 	addr              string
 	number            int
 	reconnectInterval int // reConnect Interval
+
+	// readBufferCollectionOpen defines if the read buffer would be collected
+	readBufferCollectionOpen bool
 
 	// tls
 	sslEnabled       bool
@@ -166,5 +179,12 @@ func WithClientSslEnabled(sslEnabled bool) ClientOption {
 func WithClientTlsConfigBuilder(tlsConfigBuilder TlsConfigBuilder) ClientOption {
 	return func(o *ClientOptions) {
 		o.tlsConfigBuilder = tlsConfigBuilder
+	}
+}
+
+// WithClientBufferCollectionOpen sslConfig is tls config
+func WithClientBufferCollectionOpen(readBufferCollectionOpen bool) ClientOption {
+	return func(o *ClientOptions) {
+		o.readBufferCollectionOpen = readBufferCollectionOpen
 	}
 }

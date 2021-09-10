@@ -107,4 +107,6 @@ type EndPoint interface {
 	Close()
 	// GetTaskPool get task pool implemented by dubbogo/gost
 	GetTaskPool() gxsync.GenericTaskPool
+	// GetReadBufferCollectionOpen gets if the read buffer would be collected
+	GetReadBufferCollectionOpen() bool
 }

@@ -33,6 +33,7 @@ func TestClientOptions(t *testing.T) {
 		WithReconnectInterval(5e8),
 		WithConnectionNumber(1),
 		WithRootCertificateFile(file),
+		WithClientBufferCollectionOpen(true),
 	)
 	assert.NotNil(t, clt)
 	assert.Equal(t, clt.endPointType, TCP_CLIENT)
@@ -43,6 +44,7 @@ func TestClientOptions(t *testing.T) {
 	assert.NotNil(t, clt.reconnectInterval)
 	assert.NotNil(t, clt.cert)
 	assert.Equal(t, clt.number, 1)
+	assert.True(t, clt.readBufferCollectionOpen)
 }
 
 func TestServerOptions(t *testing.T) {
@@ -56,6 +58,7 @@ func TestServerOptions(t *testing.T) {
 		WithWebsocketServerCert(cert),
 		WithWebsocketServerPrivateKey(key),
 		WithWebsocketServerRootCert(cert),
+		WithServerBufferCollectionOpen(true),
 	)
 	assert.NotNil(t, srv)
 	assert.Equal(t, srv.endPointType, TCP_SERVER)
@@ -66,4 +69,5 @@ func TestServerOptions(t *testing.T) {
 	assert.Equal(t, srv.cert, cert)
 	assert.Equal(t, srv.privateKey, key)
 	assert.Equal(t, srv.caCert, cert)
+	assert.True(t, srv.readBufferCollectionOpen)
 }

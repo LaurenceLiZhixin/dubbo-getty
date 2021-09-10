@@ -97,6 +97,7 @@ func newServer(t EndPointType, opts ...ServerOption) *server {
 		endPointType: t,
 		done:         make(chan struct{}),
 	}
+	s.readBufferCollectionOpen = defaultReadBufferCollectionOpen
 
 	s.init(opts...)
 
@@ -501,6 +502,10 @@ func (s *server) RunEventLoop(newSession NewSessionCallback) {
 	default:
 		panic(fmt.Sprintf("illegal server type %s", s.endPointType.String()))
 	}
+}
+
+func (c *server) GetReadBufferCollectionOpen() bool {
+	return c.readBufferCollectionOpen
 }
 
 func (s *server) Listener() net.Listener {

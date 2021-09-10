@@ -48,12 +48,13 @@ const (
 	// MaxWheelTimeSpan 900s, 15 minute
 	MaxWheelTimeSpan = 900e9
 
-	defaultSessionName    = "session"
-	defaultTCPSessionName = "tcp-session"
-	defaultUDPSessionName = "udp-session"
-	defaultWSSessionName  = "ws-session"
-	defaultWSSSessionName = "wss-session"
-	outputFormat          = "session %s, Read Bytes: %d, Write Bytes: %d, Read Pkgs: %d, Write Pkgs: %d"
+	defaultSessionName              = "session"
+	defaultTCPSessionName           = "tcp-session"
+	defaultUDPSessionName           = "udp-session"
+	defaultWSSessionName            = "ws-session"
+	defaultWSSSessionName           = "wss-session"
+	outputFormat                    = "session %s, Read Bytes: %d, Write Bytes: %d, Read Pkgs: %d, Write Pkgs: %d"
+	defaultReadBufferCollectionOpen = true
 )
 
 var defaultTimerWheel *gxtime.TimerWheel
@@ -129,6 +130,9 @@ type session struct {
 	// goroutines sync
 	grNum uatomic.Int32
 	lock  sync.RWMutex
+
+	// readBufferCollectionOpen defines if read buffer would be collected and reuse
+	readBufferCollectionOpen bool
 }
 
 func newSession(endPoint EndPoint, conn Connection) *session {
@@ -142,10 +146,11 @@ func newSession(endPoint EndPoint, conn Connection) *session {
 
 		period: period,
 
-		once:  &sync.Once{},
-		done:  make(chan struct{}),
-		wait:  pendingDuration,
-		attrs: gxcontext.NewValuesContext(context.Background()),
+		once:                     &sync.Once{},
+		done:                     make(chan struct{}),
+		wait:                     pendingDuration,
+		attrs:                    gxcontext.NewValuesContext(context.Background()),
+		readBufferCollectionOpen: endPoint.GetReadBufferCollectionOpen(),
 	}
 
 	ss.Connection.setSession(ss)
@@ -612,7 +617,9 @@ func (s *session) handleTCPPackage() error {
 
 	defer func() {
 		gxbytes.PutBytes(bufp)
-		gxbytes.PutBytesBuffer(pktBuf)
+		if s.readBufferCollectionOpen {
+			gxbytes.PutBytesBuffer(pktBuf)
+		}
 	}()
 
 	conn = s.Connection.(*gettyTCPConn)

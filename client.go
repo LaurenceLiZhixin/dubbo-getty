@@ -89,6 +89,7 @@ func newClient(t EndPointType, opts ...ClientOption) *client {
 		endPointType: t,
 		done:         make(chan struct{}),
 	}
+	c.readBufferCollectionOpen = defaultReadBufferCollectionOpen
 
 	c.init(opts...)
 
@@ -357,6 +358,10 @@ func (c *client) dial() Session {
 
 func (c *client) GetTaskPool() gxsync.GenericTaskPool {
 	return c.tPool
+}
+
+func (c *client) GetReadBufferCollectionOpen() bool {
+	return c.readBufferCollectionOpen
 }
 
 func (c *client) sessionNum() int {
