@@ -58,7 +58,6 @@ func main() {
 		getty.WithServerAddress(*ip+":8090"),
 		getty.WithConnectionNumber(*connections),
 		getty.WithClientTaskPool(taskPool),
-		getty.WithClientBufferCollectionOpen(false),
 	)
 
 	client.RunEventLoop(NewHelloClientSession)
