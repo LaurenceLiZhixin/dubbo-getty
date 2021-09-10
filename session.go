@@ -612,12 +612,11 @@ func (s *session) handleTCPPackage() error {
 	bufp = gxbytes.GetBytes(maxReadBufLen)
 	buf = *bufp
 
-	if s.readBufferCollectionOpen{
+	if s.readBufferCollectionOpen {
 		pktBuf = gxbytes.GetBytesBuffer()
-	}else{
+	} else {
 		pktBuf = new(bytes.Buffer)
 	}
-
 
 	defer func() {
 		gxbytes.PutBytes(bufp)
