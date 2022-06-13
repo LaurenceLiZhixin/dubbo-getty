@@ -24,6 +24,7 @@ import (
 	"io"
 	"net"
 	"runtime"
+	"runtime/debug"
 	"sync"
 	"time"
 )
@@ -543,9 +544,11 @@ func (s *session) run() {
 	}
 
 	go func() {
+		ticker := time.NewTicker(s.period)
 		defer func() {
+			ticker.Stop()
 			if r := recover(); r != nil {
-				log.Errorf("Heartbeat panic occurs, error is %s", r)
+				log.Errorf("Heartbeat panic occurs, error is %s, stack %v", r, string(debug.Stack()))
 			}
 		}()
 		ticker := time.NewTicker(s.period)
@@ -555,7 +558,7 @@ func (s *session) run() {
 				return
 			case <-ticker.C:
 				if err := heartbeat(s); err != nil {
-					log.Errorf("Heartbeat with error: %s", err)
+					log.Errorf("sessioin %s, heartbeat with error: %s", s.sessionToken(), err)
 				}
 			}
 		}
