@@ -548,11 +548,12 @@ func (s *session) run() {
 				log.Errorf("Heartbeat panic occurs, error is %s", r)
 			}
 		}()
+		ticker := time.NewTicker(s.period)
 		for {
 			select {
 			case <-s.done: // s.done is a blocked channel. if it has not been closed, the default branch will be invoked.
 				return
-			case <-time.After(s.period):
+			case <-ticker.C:
 				if err := heartbeat(s); err != nil {
 					log.Errorf("Heartbeat with error: %s", err)
 				}
